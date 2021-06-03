@@ -63,10 +63,14 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 	float[] _joyz=new float[2];
 	boolean[] _buttons=new boolean[32];
 	
+	android.content.ClipboardManager _clipboard;//Grant Edit clipboard for Android
+	
 	public BBAndroidGame( Activity activity,GameView view ){
 		_androidGame=this;
 
 		_activity=activity;
+		_clipboard = (android.content.ClipboardManager) _activity.getSystemService(Context.CLIPBOARD_SERVICE);//Grant Edit clipboard for Android
+		
 		_view=view;
 		
 		_display=_activity.getWindowManager().getDefaultDisplay();
@@ -78,6 +82,24 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 
 		return _androidGame;
 	}
+	
+	//Grant Edit clipboard for Android ---- start
+	public void SetClipboard(String string) {
+		if (_clipboard != null) {
+			_clipboard.setPrimaryClip(ClipData.newPlainText(string, string));
+		}
+	}
+
+	public String GetClipboard() {
+		if (_clipboard != null) {
+			ClipData clip = _clipboard.getPrimaryClip();
+			if (clip != null) {
+				return clip.getItemAt(0).getText().toString();
+			}
+		}
+		return "";
+	}
+	//Grant Edit clipboard for Android ---- end
 	
 	//***** LogTool ******	
 
