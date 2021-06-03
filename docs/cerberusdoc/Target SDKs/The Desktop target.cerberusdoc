@@ -10,10 +10,12 @@ Desktop apps use the OpenGL API for graphics rendering and the OpenAL API for au
 
 * [OpenAL Windows Drivers](https://www.cerberus-x.com/downloads/oalinst.zip).
 
+On Windows, either MinGW or MSVC may be used to build desktop apps. If you are using MinGW, the `MINGW_PATH` var in your [[Trans]] config file must be set correctly. If you are using MSVC, the `MSBUILD_PATH` var in your [[Trans]] config file must be set correctly.
+
 >> MacOS Requirements
 
 * [XCode](http://developer.apple.com/xcode) developer tools. XCode is also available via the Mac 'App Store' app.
 
->> Notes
+>> Linux Requirements
 
-On Windows, either MinGW or MSVC may be used to build desktop apps. If you are using MinGW, the `MINGW_PATH` var in your [[Trans]] config file must be set correctly. If you are using MSVC, the `MSBUILD_PATH` var in your [[Trans]] config file must be set correctly.
+[Install and Build Requirements Guide](https://www.cerberus-x.com/community/index.php?threads/install-and-build-requirements-for-linux-includes-raspbery-pi-updated.741/)
