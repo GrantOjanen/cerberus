@@ -3,6 +3,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="${ANDROID_APP_PACKAGE}"
   android:installLocation="auto">
+  
+  <supports-screens android:largeScreens="true" android:xlargeScreens="true" />
 
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -20,7 +22,7 @@
       android:name="CerberusGame"
       android:label="${ANDROID_APP_LABEL}"
       android:screenOrientation="${ANDROID_SCREEN_ORIENTATION}"
-      android:configChanges="keyboardHidden|orientation|screenSize"
+      android:configChanges="keyboardHidden|orientation|screenSize|navigation|keyboard|screenLayout|smallestScreenSize"
       android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
       android:launchMode="singleTop">
 
