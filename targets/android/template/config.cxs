@@ -11,7 +11,7 @@
 
 #ANDROID_APP_LABEL="Cerberus Game"
 #ANDROID_APP_PACKAGE="com.cerberus.cerberusgame"
-#ANDROID_SCREEN_ORIENTATION="user"					'"user", "portrait", "landscape"
+#ANDROID_SCREEN_ORIENTATION="user"					'"user", "userPortrait", "userLandscape"
 #ANDROID_GAMEPAD_ENABLED=False
 #ANDROID_MIN_SDK_VERSION="16"
 #ANDROID_TARGET_SDK_VERSION="28"
