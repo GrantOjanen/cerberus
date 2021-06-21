@@ -17,6 +17,8 @@ import android.text.*;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.egl.EGLConfig;
 
+import android.content.pm.ActivityInfo;//Grant Edit orientation lock
+
 import com.cerberus.LangUtil;
 
 class ActivityDelegate{
@@ -754,10 +756,35 @@ class AndroidGame extends Activity{
 		_game.KeyEvent( BBGameEvent.KeyDown,0x1a0 );
 		_game.KeyEvent( BBGameEvent.KeyUp,0x1a0 );
 	}
+	
+	//Grant Edit orientation lock start
+	@Override
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		if (Build.VERSION.SDK_INT < 18) {
+			switch (CerberusConfig.ANDROID_SCREEN_ORIENTATION) {
+				case "userPortrait":
+					if (Build.VERSION.SDK_INT >= 9) {
+						super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+					} else {
+						super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+					}
+					break;
+				case "userLandscape":
+					if (Build.VERSION.SDK_INT >= 9) {
+						super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+					} else {
+						super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					}
+					break;
+			}
+		}
+	}
+	//Grant Edit orientation lock end
 
 	@Override
 	public void onStart(){
-		super.onResume();
+		super.onStart();
 		for( ActivityDelegate delegate : _game._activityDelegates ){
 			delegate.onStart();
 		}
@@ -765,7 +792,7 @@ class AndroidGame extends Activity{
 	
 	@Override
 	public void onRestart(){
-		super.onResume();
+		super.onRestart();
 		for( ActivityDelegate delegate : _game._activityDelegates ){
 			delegate.onRestart();
 		}
@@ -789,7 +816,7 @@ class AndroidGame extends Activity{
 
 	@Override
 	public void onStop(){
-		super.onResume();
+		super.onStop();
 		for( ActivityDelegate delegate : _game._activityDelegates ){
 			delegate.onStop();
 		}
