@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="colorPrimary">${ANDROID_STYLE_COLOR_PRIMARY}</color>
+	<color name="colorPrimaryDark">${ANDROID_STYLE_COLOR_PRIMARY_DARK}</color>
+	<color name="colorAccent">${ANDROID_STYLE_COLOR_ACCENT}</color>
+</resources>

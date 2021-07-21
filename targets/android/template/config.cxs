@@ -39,6 +39,10 @@
 
 #ANDROID_NATIVE_GL_ENABLED=False
 
+#ANDROID_STYLE_COLOR_PRIMARY="#566"
+#ANDROID_STYLE_COLOR_PRIMARY_DARK="#333"
+#ANDROID_STYLE_COLOR_ACCENT="#0CB"
+
 #TEXT_FILES+="*.txt|*.xml|*.json"
 #IMAGE_FILES+="*.png|*.jpg|*.gif|*.bmp"
 #SOUND_FILES+="*.wav|*.ogg|*.mp3|*.m4a"

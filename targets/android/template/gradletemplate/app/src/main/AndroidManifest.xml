@@ -8,7 +8,7 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   ${ANDROID_MANIFEST_MAIN}
-    
+
   <application
     ${ANDROID_APPLICATION_EXTRAS}
     android:allowBackup="true"
@@ -16,12 +16,12 @@
     android:label="${ANDROID_APP_LABEL}"
     android:roundIcon="@mipmap/ic_launcher_round">
 
-    <activity 
+    <activity
       android:name="CerberusGame"
       android:label="${ANDROID_APP_LABEL}"
       android:screenOrientation="${ANDROID_SCREEN_ORIENTATION}"
       android:configChanges="keyboardHidden|orientation|screenSize"
-      android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+      android:theme="@style/AppTheme"
       android:launchMode="singleTop">
 
       <intent-filter>
@@ -36,5 +36,4 @@
     ${ANDROID_MANIFEST_APPLICATION}
 
   </application>
-</manifest> 
-          
+</manifest>
