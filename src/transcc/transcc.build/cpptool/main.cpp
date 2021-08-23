@@ -1814,7 +1814,7 @@ public:
 	virtual String LoadState();
 	virtual String LoadString( String path );
 	virtual int CountJoysticks( bool update );
-	virtual bool PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons );
+	virtual bool PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons,Array<String> name/*Grant Edit gamepad name*/ );
 	virtual void OpenUrl( String url );
 	virtual void SetMouseVisible( bool visible );
 	virtual void SetMousePos( double xpos, double ypos );
@@ -1971,7 +1971,7 @@ int BBGame::CountJoysticks( bool update ){
 	return 0;
 }
 
-bool BBGame::PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons ){
+bool BBGame::PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons,Array<String> name/*Grant Edit gamepad name*/ ){
 	return false;
 }
 

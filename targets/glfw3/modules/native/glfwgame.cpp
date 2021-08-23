@@ -12,7 +12,7 @@ public:
 	virtual void SetUpdateRate( int hertz );
 	virtual int Millisecs();
 	virtual int CountJoysticks( bool update );
-	virtual bool PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons );
+	virtual bool PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons,Array<String> name/*Grant Edit gamepad name*/ );
 	virtual void OpenUrl( String url );
 	virtual void SetMouseVisible( bool visible );
 	virtual void SetMousePos( double xpos,double ypos );
@@ -183,104 +183,183 @@ int BBGlfwGame::CountJoysticks( bool update ){
 	return _numJoys;
 }
 
-bool BBGlfwGame::PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons ){
+bool BBGlfwGame::PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons,Array<String> name /*Grant Edit gamepad name*/ ){
 
 	CountJoysticks( false );
 	
-	if( port<0 || port>=_numJoys ) return false;
+	bool canceled = false;//Grant Edit JoyConnected
+	
+	if( port<0 || port>=_numJoys ) canceled = true;//Grant Edit JoyConnected
 	
 	port=_joys[port];
 	
-	//read axes
-	int n_axes=0;
-	const float *axes=glfwGetJoystickAxes( port,&n_axes );
-	if( !axes ) return false;
-	
-	//read buttons
-	int n_buts=0;
-	const unsigned char *buts=glfwGetJoystickButtons( port,&n_buts );
-	if( !buts ) return false;
+	//Grant Edit redo GLFW gamepad support start
+	//Grant Edit JoyConnected start
+	if( !canceled && !glfwJoystickPresent(port) ) canceled = true;
 
-	//Ugh...
-	const int *dev_axes;
-	const int *dev_buttons;
-	
-#if _WIN32
-	
-	//xbox 360 controller
-	const int xbox360_axes[]={0,0x41,2,4,0x43,0x42,999};
-	const int xbox360_buttons[]={0,1,2,3,4,5,6,7,13,10,11,12,8,9,999};
-	
-	//logitech dual action
-	const int logitech_axes[]={0,1,0x86,2,0x43,0x87,999};
-	const int logitech_buttons[]={1,2,0,3,4,5,8,9,15,12,13,14,10,11,999};
-	
-	if( n_axes==5 && n_buts==14 ){
-		dev_axes=xbox360_axes;
-		dev_buttons=xbox360_buttons;
-	}else{
-		dev_axes=logitech_axes;
-		dev_buttons=logitech_buttons;
-	}
-	
-#else
+	if( canceled ){
+		joyx[0]=0;
+		joyx[1]=0;
+		joyy[0]=0;
+		joyy[1]=0;
+		joyz[0]=0;
+		joyz[1]=0;
 
-	//xbox 360 controller
-	const int xbox360_axes[]={0,0x41,0x14,2,0x43,0x15,999};
-	const int xbox360_buttons[]={11,12,13,14,8,9,5,4,2,0,3,1,6,7,10,999};
-
-	//ps3 controller
-	const int ps3_axes[]={0,0x41,0x88,2,0x43,0x89,999};
-	const int ps3_buttons[]={14,13,15,12,10,11,0,3,7,4,5,6,1,2,16,999};
-
-	//logitech dual action
-	const int logitech_axes[]={0,0x41,0x86,2,0x43,0x87,999};
-	const int logitech_buttons[]={1,2,0,3,4,5,8,9,15,12,13,14,10,11,999};
-
-	if( n_axes==6 && n_buts==15 ){
-		dev_axes=xbox360_axes;
-		dev_buttons=xbox360_buttons;
-	}else if( n_axes==4 && n_buts==19 ){
-		dev_axes=ps3_axes;
-		dev_buttons=ps3_buttons;
-	}else{
-		dev_axes=logitech_axes;
-		dev_buttons=logitech_buttons;
-	}
-
-#endif
-
-	const int *p=dev_axes;
-	
-	float joys[6]={0,0,0,0,0,0};
-	
-	for( int i=0;i<6 && p[i]!=999;++i ){
-		int j=p[i]&0xf,k=p[i]&~0xf;
-		if( k==0x10 ){
-			joys[i]=(axes[j]+1)/2;
-		}else if( k==0x20 ){
-			joys[i]=(1-axes[j])/2;
-		}else if( k==0x40 ){
-			joys[i]=-axes[j];
-		}else if( k==0x80 ){
-			joys[i]=(buts[j]==GLFW_PRESS);
-		}else{
-			joys[i]=axes[j];
+		for( int i = sizeof(buttons)-1;i >= 0;i-- ){
+			buttons[i]=0;
 		}
+		return false;//Grant Edit JoyConnected end
+	} else if ( glfwJoystickIsGamepad( port ) ){
+		GLFWgamepadstate gpState;
+		glfwGetGamepadState( port,&gpState );
+		const float *axesGP=gpState.axes;
+		const unsigned char *butsGP=gpState.buttons;
+		name[0]=glfwGetGamepadName( port );
+		joyx[0]=axesGP[GLFW_GAMEPAD_AXIS_LEFT_X];
+		joyx[1]=axesGP[GLFW_GAMEPAD_AXIS_RIGHT_X];
+		joyy[0]=axesGP[GLFW_GAMEPAD_AXIS_LEFT_Y];
+		joyy[1]=axesGP[GLFW_GAMEPAD_AXIS_RIGHT_Y];
+		joyz[0]=.5+axesGP[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER]/2;
+		joyz[1]=.5+axesGP[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER]/2;
+
+		for( int i=0;i<32;++i ) buttons[i]=false;
+
+		buttons[0]=butsGP[GLFW_GAMEPAD_BUTTON_A];
+		buttons[1]=butsGP[GLFW_GAMEPAD_BUTTON_B];
+		buttons[2]=butsGP[GLFW_GAMEPAD_BUTTON_X];
+		buttons[3]=butsGP[GLFW_GAMEPAD_BUTTON_Y];
+		buttons[4]=butsGP[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER];
+		buttons[5]=butsGP[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER];
+		buttons[6]=butsGP[GLFW_GAMEPAD_BUTTON_BACK];
+		buttons[7]=butsGP[GLFW_GAMEPAD_BUTTON_START];
+		buttons[8]=butsGP[GLFW_GAMEPAD_BUTTON_DPAD_LEFT];
+		buttons[9]=butsGP[GLFW_GAMEPAD_BUTTON_DPAD_UP];
+		buttons[10]=butsGP[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT];
+		buttons[11]=butsGP[GLFW_GAMEPAD_BUTTON_DPAD_DOWN];
+		buttons[12]=butsGP[GLFW_GAMEPAD_BUTTON_LEFT_THUMB];
+		buttons[13]=butsGP[GLFW_GAMEPAD_BUTTON_RIGHT_THUMB];
+		buttons[14]=butsGP[GLFW_GAMEPAD_BUTTON_GUIDE];
+	}else{
+	int aCount = 0;
+	int bCount = 0;
+	int hCount = 0;
+	const float *axesGP=glfwGetJoystickAxes( port,&aCount );
+	const unsigned char *butsGP=glfwGetJoystickButtons( port,&bCount );
+	const unsigned char *hatsGP=glfwGetJoystickHats( port,&hCount );
+	name[0]=glfwGetJoystickName( port );
+#if __linux
+		/*
+		a:b0 = 196/382
+		b:b1 = 221/381
+		x:b2 = 127/379
+		y:b3 = 250/379
+		leftshoulder:b4 = 264/369
+		rightshoulder:b5 = 254/378
+		lefttrigger:b6 = 107/346
+		righttrigger:b7 = 116/348
+		back:b8 = 163/359
+		start:b9 = 166/374
+		leftstick:b10 = 121/309
+		rightstick:b11 = 117/293
+		guide:b12
+		dpleft:h0.8 = 294/351
+		dpright:h0.2 = 294/351
+		dpup:h0.1 = 294/351
+		dpdown:h0.4 = 294/351
+		righty:a3 = 150/313
+		rightx:a2 = 188/313
+		leftx:a0 = 345/349
+		lefty:a1 = 344/349
+		*/
+		joyx[0]=axesGP[0];
+		joyx[1]=axesGP[2];
+		joyy[0]=axesGP[1];
+		joyy[1]=axesGP[3];
+		if (butsGP[6]){
+			joyz[0]=1;
+		}else{
+			joyz[0]=0;
+		}
+		if (butsGP[7]){
+			joyz[1]=1;
+		}else{
+			joyz[1]=0;
+		}
+
+		buttons[0]=butsGP[0];
+		buttons[1]=butsGP[1];
+		buttons[2]=butsGP[2];
+		buttons[3]=butsGP[3];
+		buttons[4]=butsGP[4];
+		buttons[5]=butsGP[5];
+		buttons[6]=butsGP[8];
+		buttons[7]=butsGP[9];
+		buttons[8]=( hatsGP[0] & GLFW_HAT_LEFT );
+		buttons[9]=( hatsGP[0] & GLFW_HAT_UP );
+		buttons[10]=( hatsGP[0] & GLFW_HAT_RIGHT );
+		buttons[11]=( hatsGP[0] & GLFW_HAT_DOWN );
+		buttons[12]=butsGP[10];
+		buttons[13]=butsGP[11];
+		buttons[14]=butsGP[12];
+#else
+		//both Mac and Windows have the same most common button mapping. Just the face buttons are different from Linux.
+		/*
+		Windows
+		a:b1 = 175/345
+		b:b2 = 143/346
+		x:b0 = 159/344
+		y:b3 = 225/343
+		leftshoulder:b4 = 231/336
+		rightshoulder:b5 = 221/342
+		lefttrigger:b6 = 165/314
+		righttrigger:b7 = 180/318
+		back:b8 = 216/326
+		start:b9 = 225/341
+		leftstick:b10 = 184/266
+		rightstick:b11 = 182/260
+		guide:b12
+		dpleft:h0.8 = 297/325
+		dpright:h0.2 = 299/325
+		dpup:h0.1 = 299/325
+		dpdown:h0.4 = 294/325
+		righty:a3 = 142/281
+		rightx:a2 = 195/282
+		leftx:a0 = 304/305
+		lefty:a1 = 303/303
+		*/
+		joyx[0]=axesGP[0];
+		joyx[1]=axesGP[2];
+		joyy[0]=axesGP[1];
+		joyy[1]=axesGP[3];
+		if (butsGP[6]){
+			joyz[0]=1;
+		}else{
+			joyz[0]=0;
+		}
+		if (butsGP[7]){
+			joyz[1]=1;
+		}else{
+			joyz[1]=0;
+		}
+
+		buttons[0]=butsGP[1];
+		buttons[1]=butsGP[2];
+		buttons[2]=butsGP[0];
+		buttons[3]=butsGP[3];
+		buttons[4]=butsGP[4];
+		buttons[5]=butsGP[5];
+		buttons[6]=butsGP[8];
+		buttons[7]=butsGP[9];
+		buttons[8]=( hatsGP[0] & GLFW_HAT_LEFT );
+		buttons[9]=( hatsGP[0] & GLFW_HAT_UP );
+		buttons[10]=( hatsGP[0] & GLFW_HAT_RIGHT );
+		buttons[11]=( hatsGP[0] & GLFW_HAT_DOWN );
+		buttons[12]=butsGP[10];
+		buttons[13]=butsGP[11];
+		buttons[14]=butsGP[12];
+#endif
 	}
-	
-	joyx[0]=joys[0];joyy[0]=joys[1];joyz[0]=joys[2];
-	joyx[1]=joys[3];joyy[1]=joys[4];joyz[1]=joys[5];
-	
-	p=dev_buttons;
-	
-	for( int i=0;i<32;++i ) buttons[i]=false;
-	
-	for( int i=0;i<32 && p[i]!=999;++i ){
-		int j=p[i];
-		if( j<0 ) j+=n_buts;
-		buttons[i]=(buts[j]==GLFW_PRESS);
-	}
+	//Grant Edit redo GLFW gamepad support end
 
 	return true;
 }
@@ -849,6 +928,14 @@ void BBGlfwGame::Run(){
 	SetDeviceWindow( CFG_GLFW_WINDOW_WIDTH,CFG_GLFW_WINDOW_HEIGHT,flags );
 
 #endif
+
+	//Grant Edit redo GLFW gamepad support start
+	int _length;
+	const char *dbString=(const char *)LoadData( PathToFilePath( "cerberus://data/gamecontrollerdb.txt" ),&_length );
+	if ( dbString!=NULL ){
+		glfwUpdateGamepadMappings( dbString );
+	}
+	//Grant Edit redo GLFW gamepad support end
 
 	StartGame();
 	

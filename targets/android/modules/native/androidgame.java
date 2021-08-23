@@ -58,11 +58,10 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 	
 	boolean _canRender;
 	
-	float[] _joyx=new float[2];
-	float[] _joyy=new float[2];
-	float[] _joyz=new float[2];
-	boolean[] _buttons=new boolean[32];
-	
+	//Grant Edit redo Android joystick support start
+	static GamepadEngine _gamepadEngine;
+	static int _joycount = -1;
+	//Grant Edit redo Android joystick support end
 	android.content.ClipboardManager _clipboard;//Grant Edit clipboard for Android
 
 	//Grant Edit clipboard for Android ---- start
@@ -88,6 +87,7 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 
 		_activity=activity;
 		_clipboard = (android.content.ClipboardManager) _activity.getSystemService(Context.CLIPBOARD_SERVICE);//Grant Edit clipboard for Android
+		_gamepadEngine = new GamepadEngine();//Grant Edit redo Android joystick support
 		_view=view;
 		
 		_display=_activity.getWindowManager().getDefaultDisplay();
@@ -213,24 +213,11 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 		public boolean dispatchKeyEventPreIme( KeyEvent event ){
 
 			if( _useGamepad ){
-				int button=-1;
-				switch( event.getKeyCode() ){
-				case 96: button=0;break;	//A
-				case 97: button=1;break;	//B
-				case 99: button=2;break;	//X
-				case 100:button=3;break;	//Y
-				case 102:button=4;break;	//LB
-				case 103:button=5;break;	//RB
-				case 108:button=7;break;	//START
-				case 21: button=8;break;	//LEFT
-				case 19: button=9;break;	//UP
-				case 22: button=10;break;	//RIGHT
-				case 20: button=11;break;	//DOWN
-				}
-				if( button!=-1 ){
-					_androidGame._buttons[button]=(event.getAction()==KeyEvent.ACTION_DOWN);
+				//Grant Edit redo Android joystick support start
+				if (_gamepadEngine.onKey(event.getKeyCode(),event)) {
 					return true;
 				}
+				//Grant Edit redo Android joystick support end
 			}
 			
 			//Convert back button to ESC in soft keyboard mode...
@@ -358,30 +345,15 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 			return true;
 		}
 		
-		//New! Dodgy gamepad support...
 		public boolean onGenericMotionEvent( MotionEvent event ){
 		
 			if( !_useGamepad ) return false;
 			
-			try{
-				int source=((Integer)_getSource.invoke( event )).intValue();
-
-				if( (source&16)==0 ) return false;
-			
-				BBAndroidGame g=_androidGame;
-			
-				args1[0]=Integer.valueOf( 0  );g._joyx[0]=((Float)_getAxisValue.invoke( event,args1 )).floatValue();
-				args1[0]=Integer.valueOf( 1  );g._joyy[0]=((Float)_getAxisValue.invoke( event,args1 )).floatValue();
-				args1[0]=Integer.valueOf( 17 );g._joyz[0]=((Float)_getAxisValue.invoke( event,args1 )).floatValue();
-				
-				args1[0]=Integer.valueOf( 11 );g._joyx[1]=((Float)_getAxisValue.invoke( event,args1 )).floatValue();
-				args1[0]=Integer.valueOf( 14 );g._joyy[1]=((Float)_getAxisValue.invoke( event,args1 )).floatValue();
-				args1[0]=Integer.valueOf( 18 );g._joyz[1]=((Float)_getAxisValue.invoke( event,args1 )).floatValue();
-				
+			//Grant Edit redo Android joystick support start
+			if (_gamepadEngine.onGenericMotion(event)) {
 				return true;
-				
-			}catch( Exception ex ){
 			}
+			//Grant Edit redo Android joystick support end
 
 			return false;
 		}
@@ -443,11 +415,49 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 		editor.commit();
 	}
 	
-	public boolean PollJoystick( int port,float[] joyx,float[] joyy,float[] joyz,boolean[] buttons ){
-		if( port!=0 ) return false;
-		joyx[0]=_joyx[0];joyy[0]=_joyy[0];joyz[0]=_joyz[0];
-		joyx[1]=_joyx[1];joyy[1]=_joyy[1];joyz[1]=_joyz[1];
-		for( int i=0;i<32;++i ) buttons[i]=_buttons[i];
+	//Grant Edit redo Android joystick support start
+	public int CountJoysticks( boolean update ){
+		if (update || _joycount == -1) {
+			_joycount = _gamepadEngine.gp_count;
+			return _joycount;
+		} else {
+			return _joycount;
+		}
+	}
+	//Grant Edit redo Android joystick support end
+	
+	public boolean PollJoystick( int port,float[] joyx,float[] joyy,float[] joyz,boolean[] buttons,String[] name/*Grant Edit gamepad name*/ ){
+		//Grant Edit redo Android joystick support start
+		if( port >= _gamepadEngine.gp_count ) return false;
+		GamepadEngine.Gamepad gp = _gamepadEngine.gamepadsReady.get(port);
+		//Grant Edit JoyConnected start
+		if (!gp.connected) {
+			joyx[0]=0;
+			joyy[0]=0;
+			joyz[0]=0;
+
+			joyx[1]=0;
+			joyy[1]=0;
+			joyz[1]=0;
+			for( int i=0;i<=14;i++ ) {
+				buttons[i]=false;
+			}
+			return false;
+		}
+		//Grant Edit JoyConnected end
+		joyx[0]=gp.axisValues[0];
+		joyy[0]=gp.axisValues[1];
+
+		joyx[1]=gp.axisValues[2];
+		joyy[1]=gp.axisValues[3];
+
+		joyz[0]=gp.axisValues[4];
+		joyz[1]=gp.axisValues[5];
+		for( int i=0;i<=14;i++ ) {
+			buttons[i]=gp.buttonsDown[i];
+		}
+		name[0]=gp.description;//Grant Edit gamepad name
+		//Grant Edit redo Android joystick support end
 		return true;
 	}
 	
@@ -569,6 +579,7 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 	}
 
 	public void UpdateGame(){
+		_gamepadEngine.tick();//Grant Edit redo Android joystick support
 		//
 		//Ok, this isn't very polite - if keyboard enabled, we just thrash showSoftInput.
 		//

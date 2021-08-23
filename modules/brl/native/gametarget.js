@@ -128,7 +128,7 @@ BBGame.prototype.CountJoysticks=function( update ){
 	return 0;
 }
 
-BBGame.prototype.PollJoystick=function( port,joyx,joyy,joyz,buttons ){
+BBGame.prototype.PollJoystick=function( port,joyx,joyy,joyz,buttons,name/*Grant Edit gamepad name*/ ){
 	return false;
 }
 

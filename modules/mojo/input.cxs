@@ -112,6 +112,18 @@ Function CountJoysticks:Int( update:Bool=True )
 	Return device.CountJoysticks( update )
 End
 
+'Grant Edit gamepad name start
+Function JoyName:String( unit=0 )
+	Return device.JoyName( unit )
+End
+'Grant Edit gamepad name end
+
+'Grant Edit JoyConnected start
+Function JoyConnected:Bool( unit=0 )
+	Return device.JoyConnected( unit )
+End
+'Grant Edit JoyConnected end
+
 Function JoyX#( index=0,unit=0 )
 	Return device.JoyX( index,unit )
 End

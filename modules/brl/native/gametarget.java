@@ -153,7 +153,7 @@ abstract class BBGame{
 		return 0;
 	}
 	
-	public boolean PollJoystick( int port,float[] joyx,float[] joyy,float[] joyz,boolean[] buttons ){
+	public boolean PollJoystick( int port,float[] joyx,float[] joyy,float[] joyz,boolean[] buttons,String[] name/*Grant Edit gamepad name*/ ){
 		return false;
 	}
 	

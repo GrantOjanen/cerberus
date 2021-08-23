@@ -139,7 +139,7 @@ class BBGame{
 		return 0;
 	}
 	
-	public function PollJoystick( port:int,joyx:Array,joyy:Array,joyz:Array,buttons:Array ):Boolean{
+	public function PollJoystick( port:int,joyx:Array,joyy:Array,joyz:Array,buttons:Array,name:Array/*Grant Edit gamepad name*/ ):Boolean{
 		return false;
 	}
 	

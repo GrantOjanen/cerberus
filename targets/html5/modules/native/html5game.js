@@ -68,13 +68,14 @@ BBHtml5Game.Html5Game=function(){
 //Grant Edit HTML5 gamepad count ---- start
 BBHtml5Game.prototype.CountJoysticks = function( update ) {
 	if (update || this._gamepadCount == -1) {
-		for (var i = this._gamepadLookup.length-1; i >= 0; i --) {
+		//Grant Edit JoyConnected start
+		this._gamepadCount = 0;
+		for (var i = 0; i < this._gamepadLookup.length; i ++) {
 			if (this._gamepadLookup[i] != -1) {
 				this._gamepadCount = i+1;
-				return this._gamepadCount;
 			}
 		}
-		return 0;
+		//Grant Edit JoyConnected end
 	}
 	return this._gamepadCount;
 }
@@ -117,28 +118,17 @@ BBHtml5Game.prototype.disconnectGamepad = function(gamepad) {
 		return false;
 	}
 
-	var m_disconnectedIndex = -1;//Grant Edit HTML5 gamepad count
-
 	//scan all gamepads for matching index
 	for(var index = 0;index < this._gamepadLookup.length;index++) {
 		if (this._gamepadLookup[index] == gamepad.index) {
 			//remove this gamepad
-			m_disconnectedIndex = index;//Grant Edit HTML5 gamepad count
-			this._gamepadLookup[index] = -1
+			this._gamepadLookup[index] = -1;//Grant Edit JoyConnected
 			break;
 		}
 	}
-	//Grant Edit HTML5 gamepad count ---- start
-	if (m_disconnectedIndex >= 0 && m_disconnectedIndex < this._gamepadLookup.length-1) {
-		for (var i = m_disconnectedIndex+1; i < this._gamepadLookup.length; i ++) {
-			this._gamepadLookup[i-1] = this._gamepadLookup[i];
-		}
-		this._gamepadLookup[this._gamepadLookup.length-1] = -1;
-	}
-	//Grant Edit HTML5 gamepad count ---- end
 }
 
-BBHtml5Game.prototype.PollJoystick=function(port, joyx, joyy, joyz, buttons){
+BBHtml5Game.prototype.PollJoystick=function(port, joyx, joyy, joyz, buttons, name/*Grant Edit gamepad name*/){
 	//is this the first gamepad being polled
 	if (port == 0) {
 		//yes it is so we use the web api to get all gamepad info
@@ -161,6 +151,7 @@ BBHtml5Game.prototype.PollJoystick=function(port, joyx, joyy, joyz, buttons){
 	if (!gamepad) {
 		return false;
 	}
+	name[0] = gamepad.id;//Grant Edit gamepad name
 	//so now process gamepad axis/buttons according to the standard mappings
 	//https://w3c.github.io/gamepad/#remapping
 	

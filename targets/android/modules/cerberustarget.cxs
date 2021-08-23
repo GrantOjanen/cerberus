@@ -9,6 +9,7 @@ Import brl.gametarget
 
 Import "native/androidgame.java"
 Import "native/cerberustarget.java"
+Import "native/GamepadEngine.java"'Grant Edit redo Android joystick support
 Import "native/MultisampleConfigChooser.java"
 
 Extern

@@ -36,7 +36,7 @@ Class BBGame Extends Null
 	Method LoadState:String()
 	Method LoadString:String( path:String )
 	Method CountJoysticks:Int( update:Bool )
-	Method PollJoystick:Bool( port:Int,joyx:Float[],joyy:Float[],joyz:Float[],buttons:Bool[] )
+	Method PollJoystick:Bool( port:Int,joyx:Float[],joyy:Float[],joyz:Float[],buttons:Bool[],name:String[] )'Grant Edit gamepad name
 	Method OpenUrl:Void( url:String )
 	Method SetMouseVisible:Void( visible:Bool )
 	Method SetMousePos:Void( xpos:Float, ypos:Float )

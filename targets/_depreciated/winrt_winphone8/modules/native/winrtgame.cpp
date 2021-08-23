@@ -25,7 +25,7 @@ public:
 	virtual int Millisecs();
 	virtual int SaveState( String state );
 	virtual String LoadState();
-	virtual bool PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons );
+	virtual bool PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons,Array<String> name/*Grant Edit gamepad name*/ );
 	virtual void OpenUrl( String url );
 	
 	virtual String PathToFilePath( String path );
@@ -106,7 +106,7 @@ String BBWinrtGame::LoadState(){
 	return "";
 }
 
-bool BBWinrtGame::PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons ){
+bool BBWinrtGame::PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons,Array<String> name/*Grant Edit gamepad name*/ ){
 	return false;
 }
 

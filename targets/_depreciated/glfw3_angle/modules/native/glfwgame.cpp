@@ -14,7 +14,7 @@ public:
 	virtual void SetUpdateRate( int hertz );
 	virtual int Millisecs();
 	virtual int CountJoysticks( bool update );
-	virtual bool PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons );
+	virtual bool PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons,Array<String> name/*Grant Edit gamepad name*/ );
 	virtual void OpenUrl( String url );
 	virtual void SetMouseVisible( bool visible );
 	virtual void SetMousePos( double xpos,double ypos );
@@ -163,7 +163,7 @@ int BBGlfwGame::CountJoysticks( bool update ){
 	return _numJoys;
 }
 
-bool BBGlfwGame::PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons ){
+bool BBGlfwGame::PollJoystick( int port,Array<Float> joyx,Array<Float> joyy,Array<Float> joyz,Array<bool> buttons,Array<String> name /*Grant Edit gamepad name*/ ){
 
 	CountJoysticks( false );
 	

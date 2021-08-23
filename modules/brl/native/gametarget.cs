@@ -144,7 +144,7 @@ public class BBGame{
 		return 0;
 	}
 	
-	public virtual bool PollJoystick( int port,float[] joyx,float[] joyy,float[] joyz,bool[] buttons ){
+	public virtual bool PollJoystick( int port,float[] joyx,float[] joyy,float[] joyz,bool[] buttons,String[] name/*Grant Edit gamepad name*/ ){
 		return false;
 	}
 	

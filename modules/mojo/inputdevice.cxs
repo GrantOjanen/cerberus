@@ -16,6 +16,8 @@ Class JoyState
 	Field joyy:Float[2]
 	Field joyz:Float[2]
 	Field buttons:Bool[32]
+	Field joyname:String[1]'Grant Edit gamepad name
+	Field connected:Bool'Grant Edit joyConnected
 End
 
 Public
@@ -118,6 +120,18 @@ Class InputDevice
 		Return BBGame.Game().CountJoysticks( update )
 	End
 	
+	'Grant Edit gamepad name start
+	Method JoyName:String( unit )
+		Return _joyStates[unit].joyname[0]
+	End
+	'Grant Edit gamepad name end
+
+	'Grant Edit joyConnected start
+	Method JoyConnected:Bool( unit )
+		Return _joyStates[unit].connected
+	End
+	'Grant Edit joyConnected end
+	
 	Method JoyX#( index,unit )
 		Return _joyStates[unit].joyx[index]
 	End
@@ -212,7 +226,8 @@ Class InputDevice
 	Method BeginUpdate:Void()
 		For Local i:=0 Until MAX_JOYSTATES
 			Local state:=_joyStates[i]
-			If Not BBGame.Game().PollJoystick( i,state.joyx,state.joyy,state.joyz,state.buttons ) Exit
+			state.connected = BBGame.Game().PollJoystick( i,state.joyx,state.joyy,state.joyz,state.buttons,state.joyname )'Grant Edit gamepad name'Grant Edit joyConnected
+			If Not state Exit'Grant Edit joyConnected
 			For Local j:=0 Until 32
 				Local key:=$100+i*32+j
 				If state.buttons[j]
