@@ -136,22 +136,26 @@ Class InputDevice
 			If Not _keyDown[data]
 				_keyDown[data]=True
 				PutKeyHit data
-				If data=KEY_LMB
-					_keyDown[KEY_TOUCH0]=True
-					PutKeyHit KEY_TOUCH0
-				Else If data=KEY_TOUCH0
-					_keyDown[KEY_LMB]=True
-					PutKeyHit KEY_LMB
-				Endif
+				'Grant Edit seperate mouse and touch input start
+				'If data=KEY_LMB
+				'	_keyDown[KEY_TOUCH0]=True
+				'	PutKeyHit KEY_TOUCH0
+				'Else If data=KEY_TOUCH0
+				'	_keyDown[KEY_LMB]=True
+				'	PutKeyHit KEY_LMB
+				'Endif
+				'Grant Edit seperate mouse and touch input end
 			Endif
 		Case BBGameEvent.KeyUp
 			If _keyDown[data]
 				_keyDown[data]=False
-				If data=KEY_LMB
-					_keyDown[KEY_TOUCH0]=False
-				Else If data=KEY_TOUCH0
-					_keyDown[KEY_LMB]=False
-				Endif
+				'Grant Edit seperate mouse and touch input start
+				'If data=KEY_LMB
+				'	_keyDown[KEY_TOUCH0]=False
+				'Else If data=KEY_TOUCH0
+				'	_keyDown[KEY_LMB]=False
+				'Endif
+				'Grant Edit seperate mouse and touch input end
 			Endif
 		Case BBGameEvent.KeyChar
 			If _charPut<_charQueue.Length
@@ -165,18 +169,19 @@ Class InputDevice
 		Select event
 		Case BBGameEvent.MouseDown
 			KeyEvent BBGameEvent.KeyDown,KEY_LMB+data
+			Return'Grant Edit seperate mouse and touch input
 		Case BBGameEvent.MouseUp
 			KeyEvent BBGameEvent.KeyUp,KEY_LMB+data
 			Return
 		Case BBGameEvent.MouseMove
 		Default
-			Return
+			'Return'Grant Edit seperate mouse and touch input
 		End
 		_mouseX=x
 		_mouseY=y
     _mouseZ=z
-		_touchX[0]=x
-		_touchY[0]=y
+		'_touchX[0]=x'Grant Edit seperate mouse and touch input
+		'_touchY[0]=y'Grant Edit seperate mouse and touch input
 	End
 	
 	Method TouchEvent:Void( event:Int,data:Int,x:Float,y:Float )
@@ -192,10 +197,12 @@ Class InputDevice
 		End
 		_touchX[data]=x
 		_touchY[data]=y
-		If data=0
-			_mouseX=x
-			_mouseY=y
-		Endif
+		'Grant Edit seperate mouse and touch input start
+		'If data=0
+		'	_mouseX=x
+		'	_mouseY=y
+		'Endif
+		'Grant Edit seperate mouse and touch input end
 	End
 	
 	Method MotionEvent:Void( event:Int,data:Int,x:Float,y:Float,z:Float )

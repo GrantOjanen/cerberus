@@ -286,20 +286,36 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 		
 		public boolean onTouchEvent( MotionEvent event ){
 		
+			boolean mouse_not_touch = ((event.getSource() &  InputDevice.SOURCE_MOUSE) == InputDevice.SOURCE_MOUSE);//Grant Edit seperate mouse and touch input
+		
 			if( !_useMulti ){
 				//mono-touch version...
 				//
 				switch( event.getAction() ){
+				//Grant Edit seperate mouse and touch input start
 				case MotionEvent.ACTION_DOWN:
-					_androidGame.TouchEvent( BBGameEvent.TouchDown,0,event.getX(),event.getY() );
+					if (!mouse_not_touch) {
+						_androidGame.TouchEvent( BBGameEvent.TouchDown,0,event.getX(),event.getY() );
+					} else {
+						_androidGame.MouseEvent( BBGameEvent.MouseDown,0,event.getX(),event.getY(),0 );
+					}
 					break;
 				case MotionEvent.ACTION_UP:
-					_androidGame.TouchEvent( BBGameEvent.TouchUp,0,event.getX(),event.getY() );
+					if (!mouse_not_touch) {
+						_androidGame.TouchEvent( BBGameEvent.TouchUp,0,event.getX(),event.getY() );
+					} else {
+						_androidGame.MouseEvent( BBGameEvent.MouseUp,0,event.getX(),event.getY(),0 );
+					}
 					break;
 				case MotionEvent.ACTION_MOVE:
-					_androidGame.TouchEvent( BBGameEvent.TouchMove,0,event.getX(),event.getY() );
+					if (!mouse_not_touch) {
+						_androidGame.TouchEvent( BBGameEvent.TouchMove,0,event.getX(),event.getY() );
+					} else {
+						_androidGame.MouseEvent( BBGameEvent.MouseMove,0,event.getX(),event.getY(),0 );
+					}
 					break;
 				}
+				//Grant Edit seperate mouse and touch input end
 				return true;
 			}
 	
@@ -313,6 +329,7 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 				final int ACTION_POINTER_UP=6;
 				final int ACTION_POINTER_INDEX_SHIFT=8;
 				final int ACTION_MASK=255;
+				final int ACTION_MOVE=2;//Grant Edit seperate mouse and touch input
 				
 				int index=-1;
 				int action=event.getAction();
@@ -322,6 +339,7 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 	
 					index=action>>ACTION_POINTER_INDEX_SHIFT;
 					
+					if (!mouse_not_touch) {//Grant Edit seperate mouse and touch input
 					args1[0]=Integer.valueOf( index );
 					int pid=((Integer)_getPointerId.invoke( event,args1 )).intValue();
 	
@@ -333,8 +351,20 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 					}else{
 						_androidGame.TouchEvent( BBGameEvent.TouchUp,pid,x,y );
 					}
+					//Grant Edit seperate mouse and touch input start
+					} else {
+						float x=event.getX();
+						float y=event.getY();
+						if( masked==ACTION_DOWN || masked==ACTION_POINTER_DOWN ){
+							_androidGame.MouseEvent( BBGameEvent.MouseDown,0,x,y,0 );
+						}else if( masked==ACTION_UP || masked==ACTION_POINTER_UP ){
+							_androidGame.MouseEvent( BBGameEvent.MouseUp,0,x,y,0 );
+						}
+					}
+					//Grant Edit seperate mouse and touch input end
 				}
 	
+				if (!mouse_not_touch) {//Grant Edit seperate mouse and touch input
 				int pointerCount=((Integer)_getPointerCount.invoke( event )).intValue();
 			
 				for( int i=0;i<pointerCount;++i ){
@@ -352,6 +382,7 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 						_androidGame.TouchEvent( BBGameEvent.TouchMove,pid,x,y );
 					}
 				}
+				}//Grant Edit seperate mouse and touch input
 			}catch( Exception ex ){
 			}
 	
@@ -360,6 +391,18 @@ class BBAndroidGame extends BBGame implements GLSurfaceView.Renderer,SensorEvent
 		
 		//New! Dodgy gamepad support...
 		public boolean onGenericMotionEvent( MotionEvent event ){
+		
+			//Grant Edit seperate mouse and touch input start
+			if ((event.getSource() &  InputDevice.SOURCE_MOUSE) == InputDevice.SOURCE_MOUSE) {
+			switch (event.getAction()) {
+				case MotionEvent.ACTION_HOVER_MOVE:
+					float x=event.getX();
+					float y=event.getY();
+					_androidGame.MouseEvent( BBGameEvent.MouseMove,0,x,y,0 );
+					return true;
+				}
+			}
+			//Grant Edit seperate mouse and touch input end
 		
 			if( !_useGamepad ) return false;
 			
